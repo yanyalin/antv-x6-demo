@@ -1,23 +1,17 @@
 <template>
-  <div class="tree">
+  <div :class="$style.tree">
     <Tree />
   </div>
-  <div class="content">
+  <div :class="$style.content">
     <Flow />
   </div>
-  <div class="nodeInfo">
+  <div :class="$style.nodeInfo">
      <p>节点信息</p>
   </div>
 </template>
 <script lang="ts" setup>
 import Tree from "./components/Tree.vue";
 import Flow from "./components/Flow.vue";
-
-import { zh_CN, Faker } from '@faker-js/faker';
-const faker = new Faker({
-  locale: [zh_CN],
-});
-console.log(faker.animal.bear());
 </script>
 
 <style>
@@ -29,9 +23,12 @@ console.log(faker.animal.bear());
 #app > div {
   height: 100%;
 }
+</style>
+<style module>
 .tree {
   width: 200px;
   border-right: 1px solid #999;
+  overflow-y: auto;
 }
 .content {
   width: calc(100% - 500px);
