@@ -25,6 +25,9 @@ import { generateRandomString } from "../utils";
 const graph = ref();
 const nodeList = [];
 const lineList = [];
+(function(){
+    
+})()
 onMounted(() => {
     graph.value = new Graph({
         grid: true,
@@ -49,7 +52,7 @@ onMounted(() => {
             allowBlank: false,
             allowLoop: false,
             highlight: true,
-            connector: "algo-connector",
+            // connector: "algo-connector",
             connectionPoint: "boundary",
             anchor: "midSide",
             validateMagnet({ magnet }) {
@@ -57,31 +60,31 @@ onMounted(() => {
                 // 限制连线配置
                 return true;
             },
-            createEdge() {
-                return graph.value.createEdge({
-                    shape: "dag-edge",
-                    attrs: {
-                        line: {
-                            strokeDasharray: "5 5",
-                            targetMarker: {
-                                name: "block",
-                                width: 12,
-                                height: 8,
-                            },
-                        },
-                    },
-                    zIndex: -1,
-                });
-            },
+            // createEdge() {
+            //     return graph.value.createEdge({
+            //         shape: "dag-edge",
+            //         attrs: {
+            //             line: {
+            //                 strokeDasharray: "5 5",
+            //                 targetMarker: {
+            //                     name: "block",
+            //                     width: 12,
+            //                     height: 8,
+            //                 },
+            //             },
+            //         },
+            //         zIndex: -1,
+            //     });
+            // },
         },
         keyboard: true,
     })
 
     graph.value.on("node:mousemove", ({ e, x, y, node, view }) => {
         const item = graph.value.toJSON().cells.find((item) => item.id === node.id);
-        for(let i = 0; i < nodeList.length; i++) {
-            if(nodeList[i].id === item.id) {
-                nodeList.splice(i,1,item)
+        for (let i = 0; i < nodeList.length; i++) {
+            if (nodeList[i].id === item.id) {
+                nodeList.splice(i, 1, item)
                 break;
             }
         }
@@ -117,7 +120,7 @@ onMounted(() => {
             shape: 'rect', // 指定使用何种图形，默认值为 'rect'
             x: 100,
             y: 200,
-            width: 80,
+            width: 200,
             height: 40,
             attrs: {
                 body: {
@@ -128,7 +131,38 @@ onMounted(() => {
                     fill: 'white',
                 },
             },
-            data: getItems()
+            data: getItems(),
+            ports: {
+                groups: {
+                    // 输入链接桩群组定义
+                    in: {
+                        position: 'top',
+                        attrs: {
+                            circle: {
+                                r: 4,
+                                magnet: true,
+                                stroke: '#31d0c6',
+                                strokeWidth: 1,
+                                fill: '#fff',
+                            },
+                        },
+                    },
+                    // 输出链接桩群组定义
+                    out: {
+                        position: 'bottom',
+                        attrs: {
+                            circle: {
+                                r: 4,
+                                magnet: true,
+                                stroke: '#31d0c6',
+                                strokeWidth: 1,
+                                fill: '#fff',
+                            },
+                        },
+                    },
+                },
+                items: getItems().ports,
+            },
         }
         graph.value.addNode(Object.assign({}, json, p));
         const node = graph.value.toJSON().cells.find((item) => item.id === id);
@@ -151,6 +185,28 @@ const handleClear = function () {
 //////////////////////////////////////////
 const flowDom = ref(null);
 const { enter } = useFullscreen(flowDom);
+//////////////////////////////////////////////
+const refresh = debounce(() => {
+    const dom = document.getElementById("container");
+    //画布重绘
+    if (dom) {
+        graph.value.resize(dom.offsetWidth, dom.offsetHeight - 40);
+        const timer = setTimeout(() => {
+            graph.value.centerContent();
+            clearTimeout(timer);
+        });
+    }
+}, 10);
+
+onUnmounted(() => {
+    refresh.cancel();
+});
+
+onMounted(() => {
+    window.addEventListener("resize", refresh);
+});
+window.removeEventListener("resize", refresh);
+/////////////////////////////////////////
 </script>
 
 <style module>

@@ -4,9 +4,9 @@
             <template v-if="e.desc">
                 <a-tooltip placement="rightTop">
                     <template v-slot:title>
-                       <p>名字：{{ e.title }}</p>
-                       <p>描述：{{ e.desc }}</p> 
-                       <p>单位：{{ e.symbol }}</p>
+                        <p>名字：{{ e.title }}</p>
+                        <p>描述：{{ e.desc }}</p>
+                        <p>单位：{{ e.symbol }}</p>
                     </template>
                     <span :draggable="true" @dragstart="handleDraggable(e)">{{ e.title }}</span>
                 </a-tooltip>
@@ -18,7 +18,7 @@
     </a-tree>
 </template>
 <script setup lang="ts">
-import { reactive, toRaw } from "vue";
+import { reactive } from "vue";
 import type { TreeProps } from 'ant-design-vue';
 import { generateRandomString } from "../utils";
 import { useGetTreeItem } from "./treeItem.js";
@@ -46,23 +46,35 @@ const treeData: TreeProps['treeData'] = reactive([
         ],
     },
 ]);
+const type = ["in", "out"]
 list.forEach((item) => {
+    const ports = []
+    const num = Math.trunc(Math.random() * 10);
+    for (let i = 0; i < num; i++) {
+        const randomInt = Number(Math.random() < 0.5); 
+        ports.push({
+            id: faker.commerce.department(),
+            group: type[randomInt],
+        })
+    }
     treeData[0].children.push({
         title: item.name,
         key: generateRandomString(10),
         desc: item.desc,
-        symbol: item.symbol
+        symbol: item.symbol,
+        ports
     })
 })
+
 const { setItems } = useGetTreeItem()
 
-const handleDraggable = ({data}) => {
-  setItems(data)
+const handleDraggable = ({ data }) => {
+    setItems(data)
 }
 </script>
 
 <style scoped>
 p {
-    margin-bottom: 0!important;
+    margin-bottom: 0 !important;
 }
 </style>

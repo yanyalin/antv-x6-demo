@@ -2,7 +2,7 @@
   <div :class="$style.tree">
     <Tree />
   </div>
-  <div :class="$style.content">
+  <div :class="$style.content" id="container">
     <Flow />
   </div>
   <div :class="$style.nodeInfo">
